@@ -13,9 +13,7 @@ const (
 )
 
 type InstanceCredentials struct {
-	Host     string
-	Port     int
-	Password string
+	KafkaHostnames string
 }
 
 type InstanceCreator interface {
@@ -54,16 +52,9 @@ func (kBroker *KafkaServiceBroker) Provision(ctx context.Context, instanceID str
 		return spec, errors.New("plan_id required")
 	}
 
-	planIdentifier := ""
-	// for key, plan := range kBroker.plans() {
-	// 	if plan.ID == serviceDetails.PlanID {
-	// 		planIdentifier = key
-	// 		break
-	// 	}
-	// }
-
-	if planIdentifier == "" {
-		return spec, errors.New("plan_id not recognized")
+	planIdentifier, err := kBroker.planIdentifier(serviceDetails.PlanID)
+	if err != nil {
+		return spec, err
 	}
 
 	instanceCreator, ok := kBroker.InstanceCreators[planIdentifier]
@@ -77,6 +68,15 @@ func (kBroker *KafkaServiceBroker) Provision(ctx context.Context, instanceID str
 	}
 
 	return spec, nil
+}
+
+func (kBroker *KafkaServiceBroker) planIdentifier(planID string) (string, error) {
+	for _, plan := range kBroker.loadCatalog().Services[0].Plans {
+		if plan.ID == planID {
+			return plan.Name, nil
+		}
+	}
+	return "", errors.New("plan_id not recognized")
 }
 
 // Deprovision deletes any topics associated with the service instance
@@ -104,9 +104,7 @@ func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, binding
 				return binding, err
 			}
 			credentialsMap := map[string]interface{}{
-				"host":     instanceCredentials.Host,
-				"port":     instanceCredentials.Port,
-				"password": instanceCredentials.Password,
+				"hostnames": instanceCredentials.KafkaHostnames,
 			}
 
 			binding.Credentials = credentialsMap
