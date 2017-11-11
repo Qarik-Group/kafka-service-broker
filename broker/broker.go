@@ -36,12 +36,13 @@ type KafkaServiceBroker struct {
 	Config           brokerconfig.Config
 }
 
+// Services returns the /v2/catalog service catalog
 func (kBroker *KafkaServiceBroker) Services(ctx context.Context) []brokerapi.Service {
 	catalog := kBroker.loadCatalog()
 	return catalog.Services
 }
 
-//Provision ...
+// Provision creates some initial Kafka topics
 func (kBroker *KafkaServiceBroker) Provision(ctx context.Context, instanceID string, serviceDetails brokerapi.ProvisionDetails, asyncAllowed bool) (spec brokerapi.ProvisionedServiceSpec, err error) {
 	spec = brokerapi.ProvisionedServiceSpec{}
 
@@ -78,6 +79,7 @@ func (kBroker *KafkaServiceBroker) Provision(ctx context.Context, instanceID str
 	return spec, nil
 }
 
+// Deprovision deletes any topics associated with the service instance
 func (kBroker *KafkaServiceBroker) Deprovision(ctx context.Context, instanceID string, details brokerapi.DeprovisionDetails, asyncAllowed bool) (brokerapi.DeprovisionServiceSpec, error) {
 	spec := brokerapi.DeprovisionServiceSpec{}
 
@@ -90,6 +92,7 @@ func (kBroker *KafkaServiceBroker) Deprovision(ctx context.Context, instanceID s
 	return spec, brokerapi.ErrInstanceDoesNotExist
 }
 
+// Bind provides the information about the Kafka cluster
 func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, bindingID string, details brokerapi.BindDetails) (brokerapi.Binding, error) {
 	binding := brokerapi.Binding{}
 
@@ -113,6 +116,7 @@ func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, binding
 	return brokerapi.Binding{}, brokerapi.ErrInstanceDoesNotExist
 }
 
+// Unbind would cancel the binding credentials
 func (kBroker *KafkaServiceBroker) Unbind(ctx context.Context, instanceID, bindingID string, details brokerapi.UnbindDetails) error {
 	for _, repo := range kBroker.InstanceBinders {
 		instanceExists, _ := repo.InstanceExists(instanceID)
@@ -145,6 +149,7 @@ func (kBroker *KafkaServiceBroker) LastOperation(ctx context.Context, instanceID
 	return brokerapi.LastOperation{}, nil
 }
 
+// Update would allow a service instance to be updated.
 func (kBroker *KafkaServiceBroker) Update(ctx context.Context, instanceID string, details brokerapi.UpdateDetails, asyncAllowed bool) (brokerapi.UpdateServiceSpec, error) {
 	return brokerapi.UpdateServiceSpec{}, nil
 }

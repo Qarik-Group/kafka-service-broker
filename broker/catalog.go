@@ -10,6 +10,7 @@ import (
 	"github.com/starkandwayne/kafka-service-broker/data"
 )
 
+// Catalog contains the service catalog returned via /v2/catalog
 type Catalog struct {
 	Services []brokerapi.Service
 }
