@@ -1,5 +1,25 @@
 # Kafka Service Broker
 
+## Catalog
+
+The default service catalog is at `data/assets/catalog.json`.
+
+You can override the entire JSON response by setting `$BROKER_CATALOG_JSON` to the JSON string.
+
+Alternately you can make minor adjustments to some of the globally unique attributes:
+
+* `BROKER_SERVICE_GUID` - to change the GUID of the service
+* `BROKER_SERVICE_NAME` - to change the name of the service
+* `BROKER_PLAN0_GUID`, `BROKER_PLAN1_GUID` - to change the GUID of the service plan (first, second, etc)
+
+## Development
+
+To only clone this branch:
+
+```
+git clone https://github.com/starkandwayne/kafka-service-broker -b v2-golang-broker --single-branch
+```
+
 To run from source code:
 
 ```
