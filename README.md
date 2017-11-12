@@ -5,6 +5,7 @@
 The following environment variables can be used to configure the broker:
 
 * `KAFKA_HOSTNAMES` - a comma separated list of `host1:port,host2:port,host3:port`, defaults to `localhost:9092`
+* `REDIS_URI` or Cloud Foundry service binding with tag `redis`, defaults to `redis://localhost:6379`
 
 ## Catalog
 

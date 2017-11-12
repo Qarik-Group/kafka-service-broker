@@ -22,7 +22,10 @@ func main() {
 
 	brokerLogger.Info("Starting Kafka service broker")
 
-	config := brokerconfig.LoadConfig()
+	config, err := brokerconfig.LoadConfig()
+	if err != nil {
+		panic(err)
+	}
 
 	topicRepo := kafka.NewTopicRepository(config.KafkaConfiguration, brokerLogger)
 
