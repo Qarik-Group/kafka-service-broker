@@ -8,10 +8,6 @@ import (
 	"github.com/starkandwayne/kafka-service-broker/brokerconfig"
 )
 
-const (
-	PlanNameSingleTopic = "topic"
-)
-
 type InstanceCredentials struct {
 	KafkaHostnames string
 }

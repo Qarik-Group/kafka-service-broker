@@ -9,6 +9,8 @@ import (
 	// "github.com/pivotal-cf/brokerapi/auth"
 
 	"github.com/starkandwayne/kafka-service-broker/broker"
+	"github.com/starkandwayne/kafka-service-broker/brokerconfig"
+	"github.com/starkandwayne/kafka-service-broker/kafka"
 )
 
 func main() {
@@ -20,10 +22,18 @@ func main() {
 
 	brokerLogger.Info("Starting Kafka service broker")
 
+	config := brokerconfig.LoadConfig()
+
+	topicRepo := kafka.NewTopicRepository(config.KafkaConfiguration, brokerLogger)
+
 	serviceBroker := &broker.KafkaServiceBroker{
-		InstanceCreators: map[string]broker.InstanceCreator{},
-		InstanceBinders:  map[string]broker.InstanceBinder{},
-		// Config:           config,
+		InstanceCreators: map[string]broker.InstanceCreator{
+			"topic": topicRepo,
+		},
+		InstanceBinders: map[string]broker.InstanceBinder{
+			"topic": topicRepo,
+		},
+		Config: config,
 	}
 
 	brokerCredentials := brokerapi.BrokerCredentials{
