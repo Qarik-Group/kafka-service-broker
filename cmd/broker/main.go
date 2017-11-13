@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -13,8 +14,20 @@ import (
 	"github.com/starkandwayne/kafka-service-broker/kafka"
 )
 
+// Version set by ci/scripts/shipit; if "" it means "development"
+var Version = ""
+
 func main() {
-	// brokerConfigPath := configPath()
+	if len(os.Args) > 1 {
+		if os.Args[1] == "-v" || os.Args[1] == "--version" {
+			if Version == "" {
+				fmt.Printf("kafka-service-broker (development)\n")
+			} else {
+				fmt.Printf("kafka-service-broker v%s\n", Version)
+			}
+			os.Exit(0)
+		}
+	}
 
 	brokerLogger := lager.NewLogger("kafka-service-broker")
 	brokerLogger.RegisterSink(lager.NewWriterSink(os.Stdout, lager.DEBUG))
