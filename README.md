@@ -25,7 +25,7 @@ Alternately you can make minor adjustments to some of the globally unique attrib
 To only clone this branch:
 
 ```
-git clone https://github.com/starkandwayne/kafka-service-broker -b v2-golang-broker --single-branch
+git clone https://github.com/starkandwayne/kafka-service-broker --single-branch
 ```
 
 To run from source code:
