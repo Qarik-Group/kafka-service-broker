@@ -93,6 +93,7 @@ func (repo *TopicRepository) Bind(instanceID string, bindingID string) (broker.I
 	return broker.InstanceCredentials{
 		ZookeeperPeers: repo.kafkaConfig.ZookeeperPeers,
 		KafkaHostnames: repo.kafkaConfig.KafkaHostnames,
+		TopicName:      instanceID,
 	}, nil
 }
 

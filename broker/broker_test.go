@@ -75,6 +75,7 @@ var _ = Describe("Kafka SB", func() {
 			instanceCredentials: broker.InstanceCredentials{
 				ZookeeperPeers: zkPeers,
 				KafkaHostnames: kafkaHostnames,
+				TopicName:      instanceID,
 			},
 		}
 
@@ -188,8 +189,9 @@ var _ = Describe("Kafka SB", func() {
 
 				expectedCredentials := brokerapi.Binding{
 					Credentials: map[string]interface{}{
-						"zk_peers":  zkPeers,
+						"zkPeers":   zkPeers,
 						"hostnames": kafkaHostnames,
+						"topicName": instanceID,
 					},
 					SyslogDrainURL:  "",
 					RouteServiceURL: "",

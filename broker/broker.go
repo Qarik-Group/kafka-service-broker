@@ -11,6 +11,7 @@ import (
 type InstanceCredentials struct {
 	ZookeeperPeers string
 	KafkaHostnames string
+	TopicName      string
 }
 
 type InstanceCreator interface {
@@ -101,8 +102,9 @@ func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, binding
 				return binding, err
 			}
 			credentialsMap := map[string]interface{}{
-				"zk_peers":  instanceCredentials.ZookeeperPeers,
+				"zkPeers":   instanceCredentials.ZookeeperPeers,
 				"hostnames": instanceCredentials.KafkaHostnames,
+				"topicName": instanceCredentials.TopicName,
 			}
 
 			binding.Credentials = credentialsMap
