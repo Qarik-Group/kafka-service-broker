@@ -199,6 +199,18 @@
 			"path": "github.com/pivotal-cf/brokerapi/auth",
 			"revision": "631943301c2216f82f6de0ab95cc75a5c88c301a",
 			"revisionTime": "2017-11-03T16:57:36Z"
+		},
+		{
+			"checksumSHA1": "U4ypvRxOj4YYX1YlHyeCPaFq5Xg=",
+			"path": "github.com/samuel/go-zookeeper/zk",
+			"revision": "9a96098268ef555eb1f04d8b1ee813d0a87e5089",
+			"revisionTime": "2017-10-27T00:15:00Z"
+		},
+		{
+			"checksumSHA1": "yh90mFYYX35FRZD8bQTjUFZ8rN8=",
+			"path": "github.com/wvanbergen/kazoo-go",
+			"revision": "494a179ad10a1a52daa7536a82cc215bc728c399",
+			"revisionTime": "2017-11-10T11:12:02Z"
 		}
 	],
 	"rootPath": "github.com/starkandwayne/kafka-service-broker"
