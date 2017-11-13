@@ -91,7 +91,6 @@ var _ = Describe("Kafka SB", func() {
 					ZookeeperTimeout: 1000,
 					KafkaHostnames:   kafkaHostnames,
 				},
-				RedisConfiguration: brokerconfig.RedisConfiguration{},
 			},
 		}
 	})

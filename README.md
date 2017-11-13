@@ -7,7 +7,6 @@ The following environment variables can be used to configure the broker:
 * `PORT` is the broker listen port for HTTP traffic, defaults to `8100`
 * `BROKER_USERNAME` and `BROKER_PASSWORD` are required to setup basic auth authorisation to the API
 * `ZOOKEEPER_PEERS` - ZooKeeper cluster used to discover the current Kafka cluster; a comma separated list of `host1:port,host2:port,host3:port`, defaults to `localhost:2181`
-* `REDIS_URI` or Cloud Foundry service binding with tag `redis`, defaults to `redis://localhost:6379`
 
 ## Catalog
 

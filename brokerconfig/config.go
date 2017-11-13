@@ -1,11 +1,9 @@
 package brokerconfig
 
 import (
-	"fmt"
 	"os"
 	"time"
 
-	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/wvanbergen/kazoo-go"
 )
 
@@ -13,7 +11,6 @@ import (
 type Config struct {
 	Broker             BrokerConfiguration
 	KafkaConfiguration KafkaConfiguration
-	RedisConfiguration RedisConfiguration
 }
 
 // BrokerConfiguration contains the auth credentials
@@ -30,11 +27,6 @@ type KafkaConfiguration struct {
 	KafkaHostnames         string
 	KafkaPartitionCount    int
 	KafkaReplicationFactor int
-}
-
-// RedisConfiguration contains location/credentials for Redis used for internal storage
-type RedisConfiguration struct {
-	URI string
 }
 
 // LoadConfig loads environment variables into Config
@@ -74,22 +66,5 @@ func LoadConfig() (config Config, err error) {
 	}
 	config.KafkaConfiguration.KafkaReplicationFactor = len(brokers)
 	config.KafkaConfiguration.KafkaPartitionCount = 2
-
-	if os.Getenv("REDIS_URI") != "" {
-		config.RedisConfiguration.URI = os.Getenv("REDIS_URI")
-	} else if cfenv.IsRunningOnCF() {
-		appEnv, _ := cfenv.Current()
-		redisService, err := appEnv.Services.WithTag("redis")
-		if err != nil {
-			return config, err
-		}
-		if redisService[0].Credentials["uri"] == nil {
-			return config, fmt.Errorf("expected redis instance %s to contain credentials 'uri'", redisService[0].Name)
-		}
-		config.RedisConfiguration.URI = redisService[0].Credentials["uri"].(string)
-	}
-	if config.RedisConfiguration.URI == "" {
-		config.RedisConfiguration.URI = "redis://localhost:6379"
-	}
 	return
 }
