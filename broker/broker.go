@@ -103,7 +103,7 @@ func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, binding
 			}
 			credentialsMap := map[string]interface{}{
 				"zkPeers":   instanceCredentials.ZookeeperPeers,
-				"hostnames": instanceCredentials.KafkaHostnames,
+				"hostname":  instanceCredentials.KafkaHostnames,
 				"topicName": instanceCredentials.TopicName,
 			}
 
