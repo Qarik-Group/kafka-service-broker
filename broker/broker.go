@@ -9,6 +9,7 @@ import (
 )
 
 type InstanceCredentials struct {
+	ZookeeperPeers string
 	KafkaHostnames string
 }
 
@@ -100,6 +101,7 @@ func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, binding
 				return binding, err
 			}
 			credentialsMap := map[string]interface{}{
+				"zk_peers":  instanceCredentials.ZookeeperPeers,
 				"hostnames": instanceCredentials.KafkaHostnames,
 			}
 

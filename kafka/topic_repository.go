@@ -64,6 +64,7 @@ func (repo *TopicRepository) Bind(instanceID string, bindingID string) (broker.I
 		"message":     "Successful bind of Kafka topic instance",
 	})
 	return broker.InstanceCredentials{
+		ZookeeperPeers: repo.kafkaConfig.ZookeeperPeers,
 		KafkaHostnames: repo.kafkaConfig.KafkaHostnames,
 	}, nil
 }

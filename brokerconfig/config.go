@@ -3,8 +3,10 @@ package brokerconfig
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/cloudfoundry-community/go-cfenv"
+	"github.com/wvanbergen/kazoo-go"
 )
 
 // Config contains the broker's primary configuration
@@ -15,7 +17,9 @@ type Config struct {
 
 // KafkaConfiguration contains location/credentials for Kafka
 type KafkaConfiguration struct {
-	KafkaHostnames string
+	ZookeeperPeers   string
+	ZookeeperTimeout time.Duration
+	KafkaHostnames   string
 }
 
 // RedisConfiguration contains location/credentials for Redis used for internal storage
@@ -25,10 +29,33 @@ type RedisConfiguration struct {
 
 // LoadConfig loads environment variables into Config
 func LoadConfig() (config Config, err error) {
-	config.KafkaConfiguration.KafkaHostnames = os.Getenv("KAFKA_HOSTNAMES")
-	if config.KafkaConfiguration.KafkaHostnames == "" {
-		config.KafkaConfiguration.KafkaHostnames = "localhost:9092"
+	config.KafkaConfiguration.ZookeeperPeers = os.Getenv("ZOOKEEPER_PEERS")
+	if config.KafkaConfiguration.ZookeeperPeers == "" {
+		config.KafkaConfiguration.ZookeeperPeers = "localhost:2181"
 	}
+	config.KafkaConfiguration.ZookeeperTimeout = 1000
+
+	zkConf := kazoo.NewConfig()
+	zkConf.Timeout = time.Duration(config.KafkaConfiguration.ZookeeperTimeout) * time.Millisecond
+
+	kz, err := kazoo.NewKazooFromConnectionString(config.KafkaConfiguration.ZookeeperPeers, zkConf)
+	if err != nil {
+		return
+	}
+	defer func() { _ = kz.Close() }()
+
+	brokers, err := kz.BrokerList()
+	if err != nil {
+		return
+	}
+
+	for _, broker := range brokers {
+		if config.KafkaConfiguration.KafkaHostnames != "" {
+			config.KafkaConfiguration.KafkaHostnames += ","
+		}
+		config.KafkaConfiguration.KafkaHostnames += broker
+	}
+
 	if os.Getenv("REDIS_URI") != "" {
 		config.RedisConfiguration.URI = os.Getenv("REDIS_URI")
 	} else if cfenv.IsRunningOnCF() {

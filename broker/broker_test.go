@@ -67,11 +67,13 @@ var _ = Describe("Kafka SB", func() {
 	var topicPlanID = "4820d23c-360a-11e7-9547-d78770a33c5b"
 	var planName = "topic"
 
+	var zkPeers = "localhost:2181,localhost:2182,localhost:2183"
 	var kafkaHostnames = "localhost:9092,localhost:9093,localhost:9094"
 
 	BeforeEach(func() {
 		someCreatorAndBinder = &fakeInstanceCreatorAndBinder{
 			instanceCredentials: broker.InstanceCredentials{
+				ZookeeperPeers: zkPeers,
 				KafkaHostnames: kafkaHostnames,
 			},
 		}
@@ -84,7 +86,12 @@ var _ = Describe("Kafka SB", func() {
 				planName: someCreatorAndBinder,
 			},
 			Config: brokerconfig.Config{
-				KafkaHostnames: kafkaHostnames,
+				KafkaConfiguration: brokerconfig.KafkaConfiguration{
+					ZookeeperPeers:   zkPeers,
+					ZookeeperTimeout: 1000,
+					KafkaHostnames:   kafkaHostnames,
+				},
+				RedisConfiguration: brokerconfig.RedisConfiguration{},
 			},
 		}
 	})
@@ -182,6 +189,7 @@ var _ = Describe("Kafka SB", func() {
 
 				expectedCredentials := brokerapi.Binding{
 					Credentials: map[string]interface{}{
+						"zk_peers":  zkPeers,
 						"hostnames": kafkaHostnames,
 					},
 					SyslogDrainURL:  "",
