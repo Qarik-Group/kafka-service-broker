@@ -40,13 +40,13 @@ func main() {
 	}
 
 	brokerCredentials := brokerapi.BrokerCredentials{
-		Username: "broker",
-		Password: "broker",
+		Username: config.Broker.Username,
+		Password: config.Broker.Password,
 	}
 
 	brokerAPI := brokerapi.New(serviceBroker, brokerLogger, brokerCredentials)
 
-	port := "5000"
+	brokerLogger.Info("listening :" + config.Broker.ListenPort)
 	http.Handle("/", brokerAPI)
-	brokerLogger.Fatal("http-listen", http.ListenAndServe("0.0.0.0:"+port, nil))
+	brokerLogger.Fatal("http-listen", http.ListenAndServe("0.0.0.0:"+config.Broker.ListenPort, nil))
 }

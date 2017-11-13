@@ -11,8 +11,16 @@ import (
 
 // Config contains the broker's primary configuration
 type Config struct {
+	Broker             BrokerConfiguration
 	KafkaConfiguration KafkaConfiguration
 	RedisConfiguration RedisConfiguration
+}
+
+// BrokerConfiguration contains the auth credentials
+type BrokerConfiguration struct {
+	ListenPort string
+	Username   string
+	Password   string
 }
 
 // KafkaConfiguration contains location/credentials for Kafka
@@ -29,6 +37,13 @@ type RedisConfiguration struct {
 
 // LoadConfig loads environment variables into Config
 func LoadConfig() (config Config, err error) {
+	config.Broker.ListenPort = os.Getenv("PORT")
+	if config.Broker.ListenPort == "" {
+		config.Broker.ListenPort = "8100"
+	}
+	config.Broker.Username = os.Getenv("BROKER_USERNAME")
+	config.Broker.Password = os.Getenv("BROKER_PASSWORD")
+
 	config.KafkaConfiguration.ZookeeperPeers = os.Getenv("ZOOKEEPER_PEERS")
 	if config.KafkaConfiguration.ZookeeperPeers == "" {
 		config.KafkaConfiguration.ZookeeperPeers = "localhost:2181"
