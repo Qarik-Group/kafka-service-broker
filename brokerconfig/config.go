@@ -25,9 +25,11 @@ type BrokerConfiguration struct {
 
 // KafkaConfiguration contains location/credentials for Kafka
 type KafkaConfiguration struct {
-	ZookeeperPeers   string
-	ZookeeperTimeout time.Duration
-	KafkaHostnames   string
+	ZookeeperPeers         string
+	ZookeeperTimeout       time.Duration
+	KafkaHostnames         string
+	KafkaPartitionCount    int
+	KafkaReplicationFactor int
 }
 
 // RedisConfiguration contains location/credentials for Redis used for internal storage
@@ -70,6 +72,8 @@ func LoadConfig() (config Config, err error) {
 		}
 		config.KafkaConfiguration.KafkaHostnames += broker
 	}
+	config.KafkaConfiguration.KafkaReplicationFactor = len(brokers)
+	config.KafkaConfiguration.KafkaPartitionCount = 2
 
 	if os.Getenv("REDIS_URI") != "" {
 		config.RedisConfiguration.URI = os.Getenv("REDIS_URI")

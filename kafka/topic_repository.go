@@ -1,7 +1,10 @@
 package kafka
 
 import (
+	"time"
+
 	"code.cloudfoundry.org/lager"
+	"github.com/wvanbergen/kazoo-go"
 
 	"github.com/starkandwayne/kafka-service-broker/broker"
 	"github.com/starkandwayne/kafka-service-broker/brokerconfig"
@@ -9,9 +12,8 @@ import (
 
 // TopicRepository describes the creation/binding of topic-orientated kafka service instances
 type TopicRepository struct {
-	kafkaConfig       brokerconfig.KafkaConfiguration
-	logger            lager.Logger
-	inMemInstanceList []string
+	kafkaConfig brokerconfig.KafkaConfiguration
+	logger      lager.Logger
 }
 
 // NewTopicRepository creates a TopicRepository
@@ -24,17 +26,30 @@ func NewTopicRepository(kafkaConfig brokerconfig.KafkaConfiguration, logger lage
 
 // InstanceExists returns true if instanceID belongs to an existing service instance
 func (repo *TopicRepository) InstanceExists(instanceID string) (bool, error) {
-	for _, inMem := range repo.inMemInstanceList {
-		if inMem == instanceID {
-			return true, nil
-		}
+	zkConf := kazoo.NewConfig()
+	zkConf.Timeout = time.Duration(repo.kafkaConfig.ZookeeperTimeout) * time.Millisecond
+	kz, err := kazoo.NewKazooFromConnectionString(repo.kafkaConfig.ZookeeperPeers, zkConf)
+	if err != nil {
+		return false, err
 	}
-	return false, nil
+	defer func() { _ = kz.Close() }()
+	return kz.Topic(instanceID).Exists()
 }
 
 // Create will create a topic(s)
 func (repo *TopicRepository) Create(instanceID string) error {
-	repo.inMemInstanceList = append(repo.inMemInstanceList, instanceID)
+	zkConf := kazoo.NewConfig()
+	zkConf.Timeout = time.Duration(repo.kafkaConfig.ZookeeperTimeout) * time.Millisecond
+	kz, err := kazoo.NewKazooFromConnectionString(repo.kafkaConfig.ZookeeperPeers, zkConf)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = kz.Close() }()
+	kz.CreateTopic(instanceID,
+		repo.kafkaConfig.KafkaPartitionCount,
+		repo.kafkaConfig.KafkaReplicationFactor,
+		map[string]string{})
+
 	repo.logger.Info("provision-instance", lager.Data{
 		"instance_id": instanceID,
 		"plan":        "topic",
@@ -46,6 +61,18 @@ func (repo *TopicRepository) Create(instanceID string) error {
 
 // Destroy will destroy any topics associated with the service instance
 func (repo *TopicRepository) Destroy(instanceID string) error {
+	zkConf := kazoo.NewConfig()
+	zkConf.Timeout = time.Duration(repo.kafkaConfig.ZookeeperTimeout) * time.Millisecond
+	kz, err := kazoo.NewKazooFromConnectionString(repo.kafkaConfig.ZookeeperPeers, zkConf)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = kz.Close() }()
+	err = kz.DeleteTopic(instanceID)
+	if err != nil {
+		return err
+	}
+
 	repo.logger.Info("deprovision-instance", lager.Data{
 		"instance_id": instanceID,
 		"plan":        "topic",
