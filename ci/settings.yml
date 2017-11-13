@@ -3,12 +3,14 @@ meta:
   name: kafka-service-broker
   target: sw
   url: https://ci.starkandwayne.com
+  initial_version: 1.0.0
 
   git:
     email:  drnic+bot@starkandwayne.com
     name:   "Stark & Wayne CI Bot"
 
   aws:
+    bucket: (( grab meta.name ))
     access_key: (( vault "secret/aws/cfcommunity:access" ))
     secret_key: (( vault "secret/aws/cfcommunity:secret" ))
 
