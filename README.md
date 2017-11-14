@@ -1,5 +1,26 @@
 # Kafka Service Broker
 
+## Installation
+
+You can install the `kafka-service-broker` CLI various ways:
+
+* MacOS/Homebrew
+
+    ```
+    brew install starkandwayne/cf/kafka-service-broker
+    ```
+
+* Debian/Ubuntu
+
+    ```
+    wget -q -O - https://raw.githubusercontent.com/starkandwayne/homebrew-cf/master/public.key | apt-key add -
+    echo "deb http://apt.starkandwayne.com stable main" | tee /etc/apt/sources.list.d/starkandwayne.list
+    apt-get update
+    apt-get install kafka-service-broker
+    ```
+
+* BOSH - see https://github.com/cloudfoundry-community/kafka-service-broker-boshrelease
+
 ## Configuration
 
 The following environment variables can be used to configure the broker:
