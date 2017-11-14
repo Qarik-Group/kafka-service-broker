@@ -1,0 +1,57 @@
+#!/bin/bash
+
+set -eu
+
+function header() {
+  echo
+  echo "########"
+  echo "$@"
+  echo
+}
+
+export EDEN_CONFIG=${EDEN_CONFIG:-tmp/eden_config_sanity_test}
+mkdir -p $(dirname $EDEN_CONFIG)
+
+export SB_BROKER_URL=${SB_BROKER_URL:-http://localhost:8100}
+export SB_BROKER_USERNAME=${SB_BROKER_USERNAME:-}
+export SB_BROKER_PASSWORD=${SB_BROKER_PASSWORD:-}
+
+header "Catalog"
+eden catalog
+echo
+
+header "Provision"
+eden provision -s starkandwayne-kafka
+
+header "Bind"
+export SB_INSTANCE=$(bosh int $EDEN_CONFIG --path /service_instances/0/id)
+eden bind
+
+credentials=$(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/credentials)
+echo "credentials: $credentials"
+
+errors=
+
+header "Test credentials"
+topicName=$(bosh int <(echo $credentials) --path /topicName)
+kafkaHostnames=$(bosh int <(echo $credentials) --path /hostname)
+uri=$(bosh int <(echo $credentials) --path /uri)
+
+if [[ "$topicName" != "$SB_INSTANCE" ]]; then
+  echo "ERROR: expected topicName '$topicName' to equal service instance ID '$SB_INSTANCE'"
+  errors=1
+fi
+if [[ "$uri" != "kafka://$kafkaHostnames/$topicName" ]]; then
+  echo "ERROR: expected uri 'kafka://$kafkaHostnames/$topicName' to equal '$uri'"
+  errors=1
+fi
+
+header "Unbind"
+eden unbind -b $(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/id)
+
+header "Deprovision"
+eden deprovision
+
+if [[ "$errors" == "1" ]]; then
+  exit 1
+fi
