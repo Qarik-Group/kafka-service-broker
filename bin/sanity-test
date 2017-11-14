@@ -11,6 +11,7 @@ function header() {
 
 export EDEN_CONFIG=${EDEN_CONFIG:-tmp/eden_config_sanity_test}
 mkdir -p $(dirname $EDEN_CONFIG)
+rm -rf $EDEN_CONFIG
 
 export SB_BROKER_URL=${SB_BROKER_URL:-http://localhost:8100}
 export SB_BROKER_USERNAME=${SB_BROKER_USERNAME:-}
