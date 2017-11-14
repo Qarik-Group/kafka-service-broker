@@ -3,6 +3,7 @@ package broker_test
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -192,6 +193,7 @@ var _ = Describe("Kafka SB", func() {
 						"zkPeers":   zkPeers,
 						"hostname":  kafkaHostnames,
 						"topicName": instanceID,
+						"uri":       fmt.Sprintf("kafka://%s/%s", kafkaHostnames, instanceID),
 					},
 					SyslogDrainURL:  "",
 					RouteServiceURL: "",

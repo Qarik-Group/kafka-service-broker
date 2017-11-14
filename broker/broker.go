@@ -3,6 +3,7 @@ package broker
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/pivotal-cf/brokerapi"
 	"github.com/starkandwayne/kafka-service-broker/brokerconfig"
@@ -105,6 +106,7 @@ func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, binding
 				"zkPeers":   instanceCredentials.ZookeeperPeers,
 				"hostname":  instanceCredentials.KafkaHostnames,
 				"topicName": instanceCredentials.TopicName,
+				"uri":       fmt.Sprintf("kafka://%s/%s", instanceCredentials.KafkaHostnames, instanceCredentials.TopicName),
 			}
 
 			binding.Credentials = credentialsMap
