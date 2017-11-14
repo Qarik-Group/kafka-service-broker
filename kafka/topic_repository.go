@@ -79,22 +79,30 @@ func (repo *TopicRepository) Destroy(instanceID string) error {
 		return fmt.Errorf("Failed to get Kafka topics from Zookeeper: %v", err)
 	}
 
-	var (
-		wg     sync.WaitGroup
-		stderr = ""
-	)
+	var wg sync.WaitGroup
 	for i, topic := range allTopics {
 		if strings.HasPrefix(topic.Name, instanceID) {
 			wg.Add(1)
 			go func(i int, topic *kazoo.Topic) {
+				defer wg.Done()
+				fmt.Println("Deleting topic", topic.Name)
 				err = kz.DeleteTopic(topic.Name)
 				if err != nil {
-					if err != nil {
-						stderr = fmt.Sprintf("%s\nFailed to delete Kafka topic '%s': %v", stderr, topic.Name, err)
-					}
+					repo.logger.Error("deprovision-instance.delete-topic", err, lager.Data{
+						"instance_id": instanceID,
+						"plan":        "topic",
+						"topic.name":  topic.Name,
+						"message":     "Failed to delete Kafka topic",
+					})
+				} else {
+					repo.logger.Info("deprovision-instance.delete-topic", lager.Data{
+						"instance_id": instanceID,
+						"plan":        "topic",
+						"topic.name":  topic.Name,
+						"message":     "Successfully deleted Kafka topic",
+					})
 				}
 			}(i, topic)
-
 		}
 	}
 
