@@ -1,1 +1,2 @@
+* Deprovision now deletes ALL topics that have the Service ID as a prefix. This means that you can use `topicName` as a prefix and dynamically create any number of topics that you need. Deprovision will clean them up with they are all named with `topicName` (the Service ID value) as the prefix.
 * `bin/sanity-test` uses `eden` CLI to show catalog/provision/bind/unbind/deprovision against a service broker
