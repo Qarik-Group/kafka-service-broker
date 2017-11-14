@@ -21,6 +21,13 @@ You can install the `kafka-service-broker` CLI various ways:
 
 * BOSH - see https://github.com/cloudfoundry-community/kafka-service-broker-boshrelease
 
+* Golang from source
+
+    ```
+    go get -u github.com/starkandwayne/kafka-service-broker/cmd/broker
+    mv $GOPATH/bin/{broker,kafka-service-broker}
+    ```
+
 ## Configuration
 
 The following environment variables can be used to configure the broker:
