@@ -1,6 +1,9 @@
 package kafka
 
 import (
+	"fmt"
+	"strings"
+	"sync"
 	"time"
 
 	"code.cloudfoundry.org/lager"
@@ -45,6 +48,8 @@ func (repo *TopicRepository) Create(instanceID string) error {
 		return err
 	}
 	defer func() { _ = kz.Close() }()
+	// A topic with the name of the instanceID is created, even if it is not returned
+	// via credentials. It is currently used as proof that the service instance exists.
 	kz.CreateTopic(instanceID,
 		repo.kafkaConfig.KafkaPartitionCount,
 		repo.kafkaConfig.KafkaReplicationFactor,
@@ -60,6 +65,7 @@ func (repo *TopicRepository) Create(instanceID string) error {
 }
 
 // Destroy will destroy any topics associated with the service instance
+// Currently "associated with" is inferred - any topic name with instanceID as a prefix
 func (repo *TopicRepository) Destroy(instanceID string) error {
 	zkConf := kazoo.NewConfig()
 	zkConf.Timeout = time.Duration(repo.kafkaConfig.ZookeeperTimeout) * time.Millisecond
@@ -68,10 +74,31 @@ func (repo *TopicRepository) Destroy(instanceID string) error {
 		return err
 	}
 	defer func() { _ = kz.Close() }()
-	err = kz.DeleteTopic(instanceID)
+	allTopics, err := kz.Topics()
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to get Kafka topics from Zookeeper: %v", err)
 	}
+
+	var (
+		wg     sync.WaitGroup
+		stderr = ""
+	)
+	for i, topic := range allTopics {
+		if strings.HasPrefix(topic.Name, instanceID) {
+			wg.Add(1)
+			go func(i int, topic *kazoo.Topic) {
+				err = kz.DeleteTopic(topic.Name)
+				if err != nil {
+					if err != nil {
+						stderr = fmt.Sprintf("%s\nFailed to delete Kafka topic '%s': %v", stderr, topic.Name, err)
+					}
+				}
+			}(i, topic)
+
+		}
+	}
+
+	wg.Wait()
 
 	repo.logger.Info("deprovision-instance", lager.Data{
 		"instance_id": instanceID,
