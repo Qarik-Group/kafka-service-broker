@@ -3,6 +3,7 @@ package broker
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/pivotal-cf/brokerapi"
@@ -20,8 +21,18 @@ func (kBroker *KafkaServiceBroker) loadCatalog() (catalog Catalog) {
 	if err != nil {
 		panic(err)
 	}
-	if os.Getenv("BROKER_CATALOG_JSON") != "" {
-		catalogJSON = []byte(os.Getenv("BROKER_CATALOG_JSON"))
+
+	catalogOverride := os.Getenv("BROKER_CATALOG_JSON")
+	if catalogOverride != "" {
+		if _, err := os.Stat(catalogOverride); !os.IsNotExist(err) {
+			catalogJSON, err = ioutil.ReadFile(catalogOverride)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			catalogJSON = []byte(catalogOverride)
+		}
+	} else if os.Getenv("BROKER_CATALOG_JSON") != "" {
 	}
 
 	if err := json.Unmarshal(catalogJSON, &catalog); err != nil {
