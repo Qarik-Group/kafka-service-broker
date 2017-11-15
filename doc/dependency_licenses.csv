@@ -1,0 +1,9 @@
+code.cloudfoundry.org/lager, 0bfa98e49e7a976af91e918d47978f07c00b081f, "Apache 2.0"
+github.com/cloudfoundry-community/go-cfenv, f920e9562d5f951cbf11785728f67258c38a10d0, "Apache 2.0"
+github.com/gorilla/context, 1be7a086a5fd6440ef16fe96baeda0c78282b980, "New BSD"
+github.com/gorilla/mux, 2d5fef06b891c971b14aa6f71ca5ab6c03a36e0e, "New BSD"
+github.com/mitchellh/mapstructure, d2dd0262208475919e1a362f675cfc0e7c10e905, MIT
+github.com/onsi/ginkgo, d94e2f4000332f62b356ecb2840c98f4218f5358, MIT
+github.com/onsi/gomega, a2ab8644e0b6a33df2cbe44673bd0f6ebba9abc3, MIT
+github.com/pivotal-cf/brokerapi, 631943301c2216f82f6de0ab95cc75a5c88c301a, "Apache 2.0"
+github.com/wvanbergen/kazoo-go, 494a179ad10a1a52daa7536a82cc215bc728c399, MIT
