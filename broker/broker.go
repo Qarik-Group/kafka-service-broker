@@ -10,9 +10,10 @@ import (
 )
 
 type InstanceCredentials struct {
-	ZookeeperPeers string
-	KafkaHostnames string
-	TopicName      string
+	ZookeeperPeers  string
+	KafkaHostnames  string
+	TopicName       string
+	TopicNamePrefix string
 }
 
 type InstanceCreator interface {
@@ -92,27 +93,49 @@ func (kBroker *KafkaServiceBroker) Deprovision(ctx context.Context, instanceID s
 }
 
 // Bind provides the information about the Kafka cluster
-func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, bindingID string, details brokerapi.BindDetails) (brokerapi.Binding, error) {
+func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, bindingID string, serviceDetails brokerapi.BindDetails) (brokerapi.Binding, error) {
 	binding := brokerapi.Binding{}
 
-	for _, repo := range kBroker.InstanceBinders {
-		instanceExists, _ := repo.InstanceExists(instanceID)
-		if instanceExists {
-			instanceCredentials, err := repo.Bind(instanceID, bindingID)
-			if err != nil {
-				return binding, err
-			}
-			credentialsMap := map[string]interface{}{
-				"zkPeers":   instanceCredentials.ZookeeperPeers,
-				"hostname":  instanceCredentials.KafkaHostnames,
-				"topicName": instanceCredentials.TopicName,
-				"uri":       fmt.Sprintf("kafka://%s/%s", instanceCredentials.KafkaHostnames, instanceCredentials.TopicName),
-			}
-
-			binding.Credentials = credentialsMap
-			return binding, nil
-		}
+	if serviceDetails.PlanID == "" {
+		return binding, errors.New("plan_id required")
 	}
+
+	planIdentifier, err := kBroker.planIdentifier(serviceDetails.PlanID)
+	if err != nil {
+		return binding, err
+	}
+
+	instanceBinder, ok := kBroker.InstanceBinders[planIdentifier]
+	if !ok {
+		return binding, errors.New("instance binder not found for plan")
+	}
+
+	instanceExists, _ := instanceBinder.InstanceExists(instanceID)
+	if instanceExists {
+		instanceCredentials, err := instanceBinder.Bind(instanceID, bindingID)
+		if err != nil {
+			return binding, err
+		}
+		credentialsMap := map[string]interface{}{
+			"zkPeers":  instanceCredentials.ZookeeperPeers,
+			"hostname": instanceCredentials.KafkaHostnames,
+		}
+
+		if instanceCredentials.TopicName != "" {
+			credentialsMap["topicName"] = instanceCredentials.TopicName
+			credentialsMap["uri"] = fmt.Sprintf("kafka://%s/%s", instanceCredentials.KafkaHostnames, instanceCredentials.TopicName)
+		}
+		if instanceCredentials.TopicNamePrefix != "" {
+			credentialsMap["topicNamePrefix"] = instanceCredentials.TopicNamePrefix
+			credentialsMap["uri"] = fmt.Sprintf("kafka://%s", instanceCredentials.KafkaHostnames)
+		}
+
+		binding.Credentials = credentialsMap
+		return binding, nil
+	} else {
+		return binding, errors.New("instance not found for plan")
+	}
+
 	return brokerapi.Binding{}, brokerapi.ErrInstanceDoesNotExist
 }
 
