@@ -132,8 +132,6 @@ func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, binding
 
 		binding.Credentials = credentialsMap
 		return binding, nil
-	} else {
-		return binding, errors.New("instance not found for plan")
 	}
 
 	return brokerapi.Binding{}, brokerapi.ErrInstanceDoesNotExist

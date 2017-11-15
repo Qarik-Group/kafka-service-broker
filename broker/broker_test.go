@@ -185,7 +185,7 @@ var _ = Describe("Kafka SB", func() {
 			It("returns credentials", func() {
 				bindingID := "bindingID"
 
-				credentials, err := kafkaBroker.Bind(ctx, instanceID, bindingID, brokerapi.BindDetails{})
+				credentials, err := kafkaBroker.Bind(ctx, instanceID, bindingID, brokerapi.BindDetails{PlanID: topicPlanID})
 				Expect(err).NotTo(HaveOccurred())
 
 				expectedCredentials := brokerapi.Binding{
@@ -207,7 +207,7 @@ var _ = Describe("Kafka SB", func() {
 			It("returns brokerapi.InstanceDoesNotExist", func() {
 				bindingID := "bindingID"
 
-				_, err := kafkaBroker.Bind(ctx, instanceID, bindingID, brokerapi.BindDetails{})
+				_, err := kafkaBroker.Bind(ctx, instanceID, bindingID, brokerapi.BindDetails{PlanID: topicPlanID})
 				Expect(err).To(Equal(brokerapi.ErrInstanceDoesNotExist))
 			})
 		})
@@ -216,19 +216,19 @@ var _ = Describe("Kafka SB", func() {
 	Describe(".Unbind", func() {
 		BeforeEach(func() {
 			someCreatorAndBinder.Create(instanceID)
-			_, err := kafkaBroker.Bind(ctx, instanceID, "EXISTANT-BINDING", brokerapi.BindDetails{})
+			_, err := kafkaBroker.Bind(ctx, instanceID, "EXISTANT-BINDING", brokerapi.BindDetails{PlanID: topicPlanID})
 			Expect(err).NotTo(HaveOccurred())
 		})
 
 		It("returns successfully if binding existed", func() {
 			someCreatorAndBinder.bindingExists = true
-			err := kafkaBroker.Unbind(ctx, instanceID, "EXISTANT-BINDING", brokerapi.UnbindDetails{})
+			err := kafkaBroker.Unbind(ctx, instanceID, "EXISTANT-BINDING", brokerapi.UnbindDetails{PlanID: topicPlanID})
 			Expect(err).NotTo(HaveOccurred())
 		})
 
 		It("returns brokerapi.ErrBindingDoesNotExist if binding did not exist", func() {
 			someCreatorAndBinder.bindingExists = false
-			err := kafkaBroker.Unbind(ctx, instanceID, "NON-EXISTANT-BINDING", brokerapi.UnbindDetails{})
+			err := kafkaBroker.Unbind(ctx, instanceID, "NON-EXISTANT-BINDING", brokerapi.UnbindDetails{PlanID: topicPlanID})
 			Expect(err).To(MatchError(brokerapi.ErrBindingDoesNotExist))
 		})
 	})
