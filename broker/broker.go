@@ -138,16 +138,28 @@ func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, binding
 }
 
 // Unbind would cancel the binding credentials
-func (kBroker *KafkaServiceBroker) Unbind(ctx context.Context, instanceID, bindingID string, details brokerapi.UnbindDetails) error {
-	for _, repo := range kBroker.InstanceBinders {
-		instanceExists, _ := repo.InstanceExists(instanceID)
-		if instanceExists {
-			err := repo.Unbind(instanceID, bindingID)
-			if err != nil {
-				return brokerapi.ErrBindingDoesNotExist
-			}
-			return nil
+func (kBroker *KafkaServiceBroker) Unbind(ctx context.Context, instanceID, bindingID string, serviceDetails brokerapi.UnbindDetails) error {
+	if serviceDetails.PlanID == "" {
+		return errors.New("plan_id required")
+	}
+
+	planIdentifier, err := kBroker.planIdentifier(serviceDetails.PlanID)
+	if err != nil {
+		return err
+	}
+
+	instanceBinder, ok := kBroker.InstanceBinders[planIdentifier]
+	if !ok {
+		return errors.New("instance binder not found for plan")
+	}
+
+	instanceExists, _ := instanceBinder.InstanceExists(instanceID)
+	if instanceExists {
+		err := instanceBinder.Unbind(instanceID, bindingID)
+		if err != nil {
+			return brokerapi.ErrBindingDoesNotExist
 		}
+		return nil
 	}
 
 	return brokerapi.ErrInstanceDoesNotExist
