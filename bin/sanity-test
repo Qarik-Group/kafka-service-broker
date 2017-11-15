@@ -21,19 +21,19 @@ header "Catalog"
 eden catalog
 echo
 
-header "Provision"
-eden provision -s starkandwayne-kafka
+errors=
 
-header "Bind"
+header "Provision 'topic' plan"
+eden provision -s starkandwayne-kafka -p topic
+
+header "Bind 'topic' plan"
 export SB_INSTANCE=$(bosh int $EDEN_CONFIG --path /service_instances/0/id)
 eden bind
 
 credentials=$(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/credentials)
 echo "credentials: $credentials"
 
-errors=
-
-header "Test credentials"
+header "Test 'topic' plan credentials"
 topicName=$(bosh int <(echo $credentials) --path /topicName)
 kafkaHostnames=$(bosh int <(echo $credentials) --path /hostname)
 uri=$(bosh int <(echo $credentials) --path /uri)
@@ -47,10 +47,49 @@ if [[ "$uri" != "kafka://$kafkaHostnames/$topicName" ]]; then
   errors=1
 fi
 
-header "Unbind"
+header "Unbind 'topic' plan"
 eden unbind -b $(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/id)
 
-header "Deprovision"
+header "Deprovision 'topic' plan"
+eden deprovision
+
+if [[ "$errors" == "1" ]]; then
+  exit 1
+fi
+
+
+rm -rf $EDEN_CONFIG
+errors=
+
+header "Provision 'shared' plan"
+eden provision -s starkandwayne-kafka -p shared
+
+header "Bind 'shared' plan"
+export SB_INSTANCE=$(bosh int $EDEN_CONFIG --path /service_instances/0/id)
+eden bind
+
+credentials=$(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/credentials)
+echo
+echo "credentials: $credentials"
+
+header "Test 'shared' plan credentials"
+topicNamePrefix=$(bosh int <(echo $credentials) --path /topicNamePrefix)
+kafkaHostnames=$(bosh int <(echo $credentials) --path /hostname)
+uri=$(bosh int <(echo $credentials) --path /uri)
+
+if [[ "$topicNamePrefix" != "$SB_INSTANCE" ]]; then
+  echo "ERROR: expected topicNamePrefix '$topicNamePrefix' to equal service instance ID '$SB_INSTANCE'"
+  errors=1
+fi
+if [[ "$uri" != "kafka://$kafkaHostnames" ]]; then
+  echo "ERROR: expected uri 'kafka://$kafkaHostnames' to equal '$uri'"
+  errors=1
+fi
+
+header "Unbind 'shard' plan"
+eden unbind -b $(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/id)
+
+header "Deprovision 'shared' plan"
 eden deprovision
 
 if [[ "$errors" == "1" ]]; then

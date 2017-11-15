@@ -19,7 +19,16 @@
         {
           "id":"4820d23c-360a-11e7-9547-d78770a33c5b",
           "name":"topic",
-          "description":"Share a topic",
+          "description":"Share a single topic on shared Kafka",
+          "metadata": {
+            "cost": 0
+          },
+          "free": true
+        },
+        {
+          "id":"02fd92c8-c997-11e7-8c02-b7c8cd91bf14",
+          "name":"shared",
+          "description":"Create your own topics on shared Kafka",
           "metadata": {
             "cost": 0
           },

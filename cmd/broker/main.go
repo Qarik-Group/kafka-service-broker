@@ -41,13 +41,16 @@ func main() {
 	}
 
 	topicRepo := kafka.NewTopicRepository(config.KafkaConfiguration, brokerLogger)
+	sharedPlanRepo := kafka.NewSharedPlanRepository(config.KafkaConfiguration, brokerLogger)
 
 	serviceBroker := &broker.KafkaServiceBroker{
 		InstanceCreators: map[string]broker.InstanceCreator{
-			"topic": topicRepo,
+			"topic":  topicRepo,
+			"shared": sharedPlanRepo,
 		},
 		InstanceBinders: map[string]broker.InstanceBinder{
-			"topic": topicRepo,
+			"topic":  topicRepo,
+			"shared": sharedPlanRepo,
 		},
 		Config: config,
 	}
