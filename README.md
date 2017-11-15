@@ -1,5 +1,15 @@
 # Kafka Service Broker
 
+This service broker shares a large Apache Kafka/Apache ZooKeeper amongst many users via the Open Service Broker API.
+
+It offers two service plans:
+
+```
+Service Name         Plan Name  Description
+starkandwayne-kafka  shared     Create your own topics on shared Kafka
+~                    topic      Share a single topic on shared Kafka
+```
+
 ## Installation
 
 You can install the `kafka-service-broker` CLI various ways:
