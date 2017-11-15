@@ -49,10 +49,5 @@ func (kBroker *KafkaServiceBroker) loadCatalog() (catalog Catalog) {
 			catalog.Services[0].Plans[i].ID = os.Getenv(fmt.Sprintf("BROKER_PLAN%d_GUID", i))
 		}
 	}
-
-	if os.Getenv("CATALOG_DOCUMENTATION_URL") != "" {
-		catalog.Services[0].Metadata.DocumentationUrl = os.Getenv("CATALOG_DOCUMENTATION_URL")
-	}
-
 	return catalog
 }

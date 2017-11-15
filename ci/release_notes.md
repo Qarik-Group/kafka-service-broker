@@ -16,4 +16,3 @@
   Remember, your Kafka `server.properties` needs to have `delete.topic.enable=true` configured to allow topics to be deleted. If `delete.topic.enable=false` then Deprovision will quietly ignore deleting topics and complete successfully.
 * `bin/sanity-test` uses `eden` CLI to show catalog/provision/bind/unbind/deprovision against a service broker for both service plans
 * `$BROKER_CATALOG_JSON` can now reference a file or a JSON text string
-* set `$CATALOG_DOCUMENTATION_URL` to change `metadata.documentationUrl` in catalog

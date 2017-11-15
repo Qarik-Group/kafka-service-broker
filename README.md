@@ -58,9 +58,6 @@ Alternately you can make minor adjustments to some of the globally unique attrib
 * `BROKER_SERVICE_NAME` - to change the name of the service
 * `BROKER_PLAN0_GUID`, `BROKER_PLAN1_GUID` - to change the GUID of the service plan (first, second, etc)
 
-Additional overrides:
-* `CATALOG_DOCUMENTATION_URL` - change the reference documentation; defaults to https://github.com/starkandwayne/kafka-service-broker/
-
 ## Development
 
 To only clone this branch:
