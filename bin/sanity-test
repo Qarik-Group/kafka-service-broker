@@ -12,7 +12,7 @@ function header() {
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 cd $ROOT
 
-if [[ "${RUN_BROKER_FOR_SANITY_TEST:-X}" == "X" ]]; then
+if [[ "${SANITY_TEST_RUN_BROKER:-X}" == "X" ]]; then
   export SB_BROKER_URL=${SB_BROKER_URL:-http://localhost:$PORT}
   export SB_BROKER_USERNAME=${SB_BROKER_USERNAME:-}
   export SB_BROKER_PASSWORD=${SB_BROKER_PASSWORD:-}
@@ -26,9 +26,12 @@ else
   echo "Starting broker :$PORT ...";
   go run cmd/broker/main.go &
   BROKER_PID=$!
-  sleep 2
+  sleep 1
 
-  function finish { echo "Stopping broker..."; kill $BROKER_PID; }
+  function finish {
+    echo "Stopping broker..."
+    killall main
+  }
   trap finish EXIT SIGINT SIGTERM
 
   export SB_BROKER_URL=http://localhost:$PORT
@@ -37,6 +40,7 @@ else
 fi
 
 
+echo "Target broker ${SB_BROKER_URL} ..."
 export EDEN_CONFIG=${EDEN_CONFIG:-tmp/eden_config_sanity_test}
 mkdir -p $(dirname $EDEN_CONFIG)
 rm -rf $EDEN_CONFIG
