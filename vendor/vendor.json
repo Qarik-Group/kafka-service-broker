@@ -27,6 +27,12 @@
 			"revisionTime": "2017-11-09T03:54:02Z"
 		},
 		{
+			"checksumSHA1": "cdOCt0Yb+hdErz8NAQqayxPmRsY=",
+			"path": "github.com/hashicorp/errwrap",
+			"revision": "7554cd9344cec97297fa6649b055a8c98c2a1e55",
+			"revisionTime": "2014-10-28T05:47:10Z"
+		},
+		{
 			"checksumSHA1": "HyzJVpU83/duL9rjkQ4fGE0cw5Q=",
 			"path": "github.com/jessevdk/go-flags",
 			"revision": "460c7bb0abd6e927f2767cadc91aa6ef776a98b4",

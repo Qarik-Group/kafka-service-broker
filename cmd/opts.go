@@ -5,8 +5,9 @@ type BrokerOpts struct {
 	Version bool `short:"v" long:"version" description:"Show version"`
 
 	// Commands
-	RunBroker           RunBrokerOpts           `command:"run-broker" alias:"b" alias:"bkr" alias:"broker" description:"Run the service broker web app"`
-	SanityTestTopicPlan SanityTestTopicPlanOpts `command:"sanity-test-topic-plan" description:"Consume 'topic' service plan credentials JSON via STDIN and perform sanity tests"`
+	RunBroker            RunBrokerOpts            `command:"run-broker" alias:"b" alias:"bkr" alias:"broker" description:"Run the service broker web app"`
+	SanityTestTopicPlan  SanityTestTopicPlanOpts  `command:"sanity-test-topic-plan" description:"Consume 'topic' service plan credentials JSON via STDIN and perform sanity tests"`
+	SanityTestSharedPlan SanityTestSharedPlanOpts `command:"sanity-test-shared-plan" description:"Consume 'shared' service plan credentials JSON via STDIN and perform sanity tests"`
 }
 
 // Opts carries all the user provided options (from flags or env vars)

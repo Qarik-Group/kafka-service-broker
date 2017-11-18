@@ -119,6 +119,8 @@ if [[ "$uri" != "kafka://$kafkaHostnames" ]]; then
   errors=1
 fi
 
+echo "$credentials" | go run cmd/broker/main.go sanity-test-shared-plan
+
 header "Unbind 'shard' plan"
 eden unbind -b $(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/id)
 
