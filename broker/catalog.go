@@ -32,7 +32,6 @@ func (kBroker *KafkaServiceBroker) loadCatalog() (catalog Catalog) {
 		} else {
 			catalogJSON = []byte(catalogOverride)
 		}
-	} else if os.Getenv("BROKER_CATALOG_JSON") != "" {
 	}
 
 	if err := json.Unmarshal(catalogJSON, &catalog); err != nil {
