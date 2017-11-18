@@ -27,6 +27,12 @@
 			"revisionTime": "2017-11-09T03:54:02Z"
 		},
 		{
+			"checksumSHA1": "HyzJVpU83/duL9rjkQ4fGE0cw5Q=",
+			"path": "github.com/jessevdk/go-flags",
+			"revision": "460c7bb0abd6e927f2767cadc91aa6ef776a98b4",
+			"revisionTime": "2017-02-12T22:02:46Z"
+		},
+		{
 			"checksumSHA1": "KCJhN9Dx329wAN/SeL4CxeypPyk=",
 			"path": "github.com/mitchellh/mapstructure",
 			"revision": "d2dd0262208475919e1a362f675cfc0e7c10e905",
