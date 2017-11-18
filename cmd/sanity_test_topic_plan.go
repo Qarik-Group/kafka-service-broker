@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"encoding/json"
@@ -8,9 +8,12 @@ import (
 	"github.com/wvanbergen/kazoo-go"
 )
 
-// Receive 'topic' plan credentials via STDIN, and perform a test upon it.
+// SanityTestTopicPlanOpts represents the 'sanity-test-topic-plan' command
+type SanityTestTopicPlanOpts struct {
+}
 
-func main() {
+// Execute is callback from go-flags.Commander interface
+func (c SanityTestTopicPlanOpts) Execute(_ []string) (err error) {
 	decoder := json.NewDecoder(os.Stdin)
 	// creds := Credentials{}
 	creds := make(map[string]string)
@@ -58,4 +61,5 @@ func main() {
 		os.Exit(4)
 	}
 
+	return
 }

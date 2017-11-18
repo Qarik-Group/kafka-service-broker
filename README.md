@@ -38,6 +38,12 @@ You can install the `kafka-service-broker` CLI various ways:
     mv $GOPATH/bin/{broker,kafka-service-broker}
     ```
 
+## Run broker
+
+```
+kafka-service-broker run-broker
+```
+
 ## Configuration
 
 The following environment variables can be used to configure the broker:
@@ -69,7 +75,7 @@ git clone https://github.com/starkandwayne/kafka-service-broker --single-branch
 To run from source code:
 
 ```
-go run cmd/broker/main.go
+go run cmd/broker/main.go run-broker
 ```
 
 When adding/updating `data/assets/`, remember to run `go-bindata` to embed the changes into `data/data.go`:

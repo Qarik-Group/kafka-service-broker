@@ -24,7 +24,7 @@ else
   export PORT=8200
 
   echo "Starting broker :$PORT ...";
-  go run cmd/broker/main.go &
+  go run cmd/broker/main.go run-broker &
   BROKER_PID=$!
   sleep 1
 
@@ -78,7 +78,7 @@ if [[ "$uri" != "kafka://$kafkaHostnames/$topicName" ]]; then
 fi
 
 header "Running tests against 'topic' plan credentials"
-echo "$credentials" | go run cmd/sanity-test/topic/main.go
+echo "$credentials" | go run cmd/broker/main.go sanity-test-topic-plan
 
 header "Unbind 'topic' plan"
 eden unbind -b $(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/id)
@@ -100,9 +100,9 @@ eden provision -s starkandwayne-kafka -p shared
 header "Bind 'shared' plan"
 export SB_INSTANCE=$(bosh int $EDEN_CONFIG --path /service_instances/0/id)
 eden bind
+echo
 
 credentials=$(bosh int $EDEN_CONFIG --path /service_instances/0/bindings/0/credentials)
-echo
 echo "credentials: $credentials"
 
 header "Test 'shared' plan credentials"

@@ -2,16 +2,11 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 
-	"code.cloudfoundry.org/lager"
-	"github.com/pivotal-cf/brokerapi"
-	// "github.com/pivotal-cf/brokerapi/auth"
+	"github.com/jessevdk/go-flags"
 
-	"github.com/starkandwayne/kafka-service-broker/broker"
-	"github.com/starkandwayne/kafka-service-broker/brokerconfig"
-	"github.com/starkandwayne/kafka-service-broker/kafka"
+	"github.com/starkandwayne/kafka-service-broker/cmd"
 )
 
 // Version set by ci/scripts/shipit; if "" it means "development"
@@ -29,40 +24,20 @@ func main() {
 		}
 	}
 
-	brokerLogger := lager.NewLogger("kafka-service-broker")
-	brokerLogger.RegisterSink(lager.NewWriterSink(os.Stdout, lager.DEBUG))
-	brokerLogger.RegisterSink(lager.NewWriterSink(os.Stderr, lager.ERROR))
+	parser := flags.NewParser(&cmd.Opts, flags.Default)
 
-	brokerLogger.Info("Starting Kafka service broker")
-
-	config, err := brokerconfig.LoadConfig()
-	if err != nil {
-		panic(err)
+	if len(os.Args) == 1 {
+		_, err := parser.ParseArgs([]string{"--help"})
+		if err != nil {
+			os.Exit(1)
+		}
+	} else {
+		_, err := parser.Parse()
+		if err != nil {
+			os.Exit(1)
+		}
 	}
+}
 
-	topicRepo := kafka.NewTopicRepository(config.KafkaConfiguration, brokerLogger)
-	sharedPlanRepo := kafka.NewSharedPlanRepository(config.KafkaConfiguration, brokerLogger)
-
-	serviceBroker := &broker.KafkaServiceBroker{
-		InstanceCreators: map[string]broker.InstanceCreator{
-			"topic":  topicRepo,
-			"shared": sharedPlanRepo,
-		},
-		InstanceBinders: map[string]broker.InstanceBinder{
-			"topic":  topicRepo,
-			"shared": sharedPlanRepo,
-		},
-		Config: config,
-	}
-
-	brokerCredentials := brokerapi.BrokerCredentials{
-		Username: config.Broker.Username,
-		Password: config.Broker.Password,
-	}
-
-	brokerAPI := brokerapi.New(serviceBroker, brokerLogger, brokerCredentials)
-
-	brokerLogger.Info("listening :" + config.Broker.ListenPort)
-	http.Handle("/", brokerAPI)
-	brokerLogger.Fatal("http-listen", http.ListenAndServe("0.0.0.0:"+config.Broker.ListenPort, nil))
+func runBrk() {
 }
