@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -72,6 +73,7 @@ var _ = Describe("Kafka SB", func() {
 	var kafkaHostnames = "localhost:9092,localhost:9093,localhost:9094"
 
 	BeforeEach(func() {
+		os.Clearenv()
 		someCreatorAndBinder = &fakeInstanceCreatorAndBinder{
 			instanceCredentials: broker.InstanceCredentials{
 				ZookeeperPeers: zkPeers,
