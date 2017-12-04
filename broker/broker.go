@@ -32,11 +32,12 @@ type KafkaServiceBroker struct {
 	InstanceCreators map[string]InstanceCreator
 	InstanceBinders  map[string]InstanceBinder
 	Config           brokerconfig.Config
+	catalog          *Catalog
 }
 
 // Services returns the /v2/catalog service catalog
 func (kBroker *KafkaServiceBroker) Services(ctx context.Context) []brokerapi.Service {
-	catalog := kBroker.loadCatalog()
+	catalog := kBroker.Catalog()
 	return catalog.Services
 }
 
@@ -52,7 +53,7 @@ func (kBroker *KafkaServiceBroker) Provision(ctx context.Context, instanceID str
 		return spec, errors.New("plan_id required")
 	}
 
-	planIdentifier, err := kBroker.planIdentifier(serviceDetails.PlanID)
+	planIdentifier, err := kBroker.planIdentifier(ctx, serviceDetails.PlanID)
 	if err != nil {
 		return spec, err
 	}
@@ -70,8 +71,8 @@ func (kBroker *KafkaServiceBroker) Provision(ctx context.Context, instanceID str
 	return spec, nil
 }
 
-func (kBroker *KafkaServiceBroker) planIdentifier(planID string) (string, error) {
-	for _, plan := range kBroker.loadCatalog().Services[0].Plans {
+func (kBroker *KafkaServiceBroker) planIdentifier(ctx context.Context, planID string) (string, error) {
+	for _, plan := range kBroker.Services(ctx)[0].Plans {
 		if plan.ID == planID {
 			return plan.Name, nil
 		}
@@ -100,7 +101,7 @@ func (kBroker *KafkaServiceBroker) Bind(ctx context.Context, instanceID, binding
 		return binding, errors.New("plan_id required")
 	}
 
-	planIdentifier, err := kBroker.planIdentifier(serviceDetails.PlanID)
+	planIdentifier, err := kBroker.planIdentifier(ctx, serviceDetails.PlanID)
 	if err != nil {
 		return binding, err
 	}
@@ -143,7 +144,7 @@ func (kBroker *KafkaServiceBroker) Unbind(ctx context.Context, instanceID, bindi
 		return errors.New("plan_id required")
 	}
 
-	planIdentifier, err := kBroker.planIdentifier(serviceDetails.PlanID)
+	planIdentifier, err := kBroker.planIdentifier(ctx, serviceDetails.PlanID)
 	if err != nil {
 		return err
 	}
