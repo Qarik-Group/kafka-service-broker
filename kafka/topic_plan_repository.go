@@ -13,22 +13,22 @@ import (
 	"github.com/starkandwayne/kafka-service-broker/brokerconfig"
 )
 
-// TopicRepository describes the creation/binding of topic-orientated kafka service instances
-type TopicRepository struct {
+// TopicPlanRepository describes the creation/binding of topic-orientated kafka service instances
+type TopicPlanRepository struct {
 	kafkaConfig brokerconfig.KafkaConfiguration
 	logger      lager.Logger
 }
 
-// NewTopicRepository creates a TopicRepository
-func NewTopicRepository(kafkaConfig brokerconfig.KafkaConfiguration, logger lager.Logger) *TopicRepository {
-	return &TopicRepository{
+// NewTopicPlanRepository creates a TopicPlanRepository
+func NewTopicPlanRepository(kafkaConfig brokerconfig.KafkaConfiguration, logger lager.Logger) *TopicPlanRepository {
+	return &TopicPlanRepository{
 		kafkaConfig: kafkaConfig,
 		logger:      logger,
 	}
 }
 
 // InstanceExists returns true if instanceID belongs to an existing service instance
-func (repo *TopicRepository) InstanceExists(instanceID string) (bool, error) {
+func (repo *TopicPlanRepository) InstanceExists(instanceID string) (bool, error) {
 	zkConf := kazoo.NewConfig()
 	zkConf.Timeout = time.Duration(repo.kafkaConfig.ZookeeperTimeout) * time.Millisecond
 	kz, err := kazoo.NewKazooFromConnectionString(repo.kafkaConfig.ZookeeperPeers, zkConf)
@@ -40,7 +40,7 @@ func (repo *TopicRepository) InstanceExists(instanceID string) (bool, error) {
 }
 
 // Create will create a topic(s)
-func (repo *TopicRepository) Create(instanceID string) error {
+func (repo *TopicPlanRepository) Create(instanceID string) error {
 	zkConf := kazoo.NewConfig()
 	zkConf.Timeout = time.Duration(repo.kafkaConfig.ZookeeperTimeout) * time.Millisecond
 	kz, err := kazoo.NewKazooFromConnectionString(repo.kafkaConfig.ZookeeperPeers, zkConf)
@@ -66,7 +66,7 @@ func (repo *TopicRepository) Create(instanceID string) error {
 
 // Destroy will destroy any topics associated with the service instance
 // Currently "associated with" is inferred - any topic name with instanceID as a prefix
-func (repo *TopicRepository) Destroy(instanceID string) error {
+func (repo *TopicPlanRepository) Destroy(instanceID string) error {
 	zkConf := kazoo.NewConfig()
 	zkConf.Timeout = time.Duration(repo.kafkaConfig.ZookeeperTimeout) * time.Millisecond
 	kz, err := kazoo.NewKazooFromConnectionString(repo.kafkaConfig.ZookeeperPeers, zkConf)
@@ -118,7 +118,7 @@ func (repo *TopicRepository) Destroy(instanceID string) error {
 }
 
 // Bind provides the credentials to access the Kafka cluster and the provided topics
-func (repo *TopicRepository) Bind(instanceID string, bindingID string) (broker.InstanceCredentials, error) {
+func (repo *TopicPlanRepository) Bind(instanceID string, bindingID string) (broker.InstanceCredentials, error) {
 	repo.logger.Info("bind-instance", lager.Data{
 		"instance_id": instanceID,
 		"binding_id":  bindingID,
@@ -133,7 +133,7 @@ func (repo *TopicRepository) Bind(instanceID string, bindingID string) (broker.I
 }
 
 // Unbind is a no-op as bindings are shared across all instances
-func (repo *TopicRepository) Unbind(instanceID string, bindingID string) error {
+func (repo *TopicPlanRepository) Unbind(instanceID string, bindingID string) error {
 	repo.logger.Info("unbind-instance", lager.Data{
 		"instance_id": instanceID,
 		"binding_id":  bindingID,

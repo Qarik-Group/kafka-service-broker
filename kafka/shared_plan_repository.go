@@ -14,11 +14,11 @@ import (
 )
 
 // SharedPlanRepository describes the creation/binding of a shared kafka service instances
-// Unlike TopicRepository, SharedPlanRepository does not provide any pre-created topics.
+// Unlike TopicPlanRepository, SharedPlanRepository does not provide any pre-created topics.
 // Instead it is assumed that an orchestrator or producer will dynamically create topics and
 // have their own way to share the topics with consumers.
 // They should use the "topicNamePrefix" as the prefix for all topic names.
-// Like TopicRepository, Deprovision will delete all Kafka topics that have the service instanceID
+// Like TopicPlanRepository, Deprovision will delete all Kafka topics that have the service instanceID
 // as a prefix on the topic name.
 //
 // Note, SharedPlanRepository currently still does create an initial topic (with the name instanceID)

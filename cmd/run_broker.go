@@ -29,7 +29,7 @@ func (c RunBrokerOpts) Execute(_ []string) (err error) {
 		panic(err)
 	}
 
-	topicRepo := kafka.NewTopicRepository(config.KafkaConfiguration, brokerLogger)
+	topicRepo := kafka.NewTopicPlanRepository(config.KafkaConfiguration, brokerLogger)
 	sharedPlanRepo := kafka.NewSharedPlanRepository(config.KafkaConfiguration, brokerLogger)
 
 	serviceBroker := &broker.KafkaServiceBroker{
