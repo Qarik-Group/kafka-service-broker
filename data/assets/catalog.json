@@ -9,11 +9,11 @@
         "kafka"
       ],
       "metadata":{
-        "displayName":"Stark & Wayne Kafka",
+        "displayName":"Stark & Wayne kStreams for Apache Kafka",
         "imageUrl":"https://svn.apache.org/repos/asf/kafka/site/logos/originals/png/ICON%20-%20Black%20on%20Transparent.png",
-        "longDescription":"Apache Kafka",
+        "longDescription":"Stark & Wayne kStreams for Apache Kafka",
         "providerDisplayName":"Stark & Wayne",
-        "documentationUrl":"https://www.dingotiles.com/dingo-kafka"
+        "shareable": true
       },
       "plans":[
         {
